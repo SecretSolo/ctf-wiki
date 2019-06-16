@@ -46,10 +46,10 @@ if (__builtin_expect (FD->bk != P || BK->fd != P, 0))                      \
 
 那么 unlink 具体执行的效果是什么样子呢？我们可以来分析一下
 
-- FD=P->fd = target addr -12
+- FD=P->fd = target addr -16
 - BK=P->bk = expect value
-- FD->bk = BK，即 *(target addr-12+12)=BK=expect value
-- BK->fd = FD，即*(expect value +8) = FD = target addr-12
+- FD->bk = BK，即 *(target addr-16+16)=BK=expect value
+- BK->fd = FD，即*(expect value +8) = FD = target addr-16
 
 **看起来我们似乎可以通过 unlink 直接实现任意地址读写的目的，但是我们还是需要确保 expect value +8 地址具有可写的权限。**
 
@@ -67,27 +67,27 @@ if (__builtin_expect (FD->bk != P || BK->fd != P, 0))                      \
 
 此时
 
-- FD->bk = target addr - 12 + 12=target_addr
+- FD->bk = target addr - 16 + 16=target_addr
 - BK->fd = expect value + 8
 
 那么我们上面所利用的修改 GOT 表项的方法就可能不可用了。但是我们可以通过伪造的方式绕过这个机制。
 
 首先我们通过覆盖，将 nextchunk 的 FD 指针指向了 fakeFD，将 nextchunk 的 BK 指针指向了 fakeBK 。那么为了通过验证，我们需要
 
-- `fakeFD -> bk == P`  <=>  `*(fakeFD + 12) == P`
+- `fakeFD -> bk == P`  <=>  `*(fakeFD + 16) == P`
 - `fakeBK -> fd == P`  <=>  `*(fakeBK + 8) == P`
 
 当满足上述两式时，可以进入 Unlink 的环节，进行如下操作：
 
-- `fakeFD -> bk = fakeBK`  <=>  `*(fakeFD + 12) = fakeBK`
+- `fakeFD -> bk = fakeBK`  <=>  `*(fakeFD + 16) = fakeBK`
 - `fakeBK -> fd = fakeFD`  <=>  `*(fakeBK + 8) = fakeFD`
 
-如果让 fakeFD + 12 和 fakeBK + 8 指向同一个指向P的指针，那么：
+如果让 fakeFD + 16 和 fakeBK + 8 指向同一个指向P的指针，那么：
 
 - `*P = P - 8`
-- `*P = P - 12`
+- `*P = P - 16`
 
-即通过此方式，P 的指针指向了比自己低 12 的地址处。此方法虽然不可以实现任意地址写，但是可以修改指向 chunk 的指针，这样的修改是可以达到一定的效果的。
+即通过此方式，P 的指针指向了比自己低 16 的地址处。此方法虽然不可以实现任意地址写，但是可以修改指向 chunk 的指针，这样的修改是可以达到一定的效果的。
 
 如果我们想要使得两者都指向 P，只需要按照如下方式修改即可
 
