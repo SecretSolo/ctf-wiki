@@ -33,7 +33,7 @@ $L(B)=\{\sum\limits_{i=1}^{n}x_ib_i:x_i \in Z,1\leq i \leq n\}$
 
 **最短线性无关向量问题(Shortest Independent Vector Problem, SIVP)**：给定一个秩为 n 的格 L，找到格 L 中 n 个线性无关向量 $s_i$，满足$||s_i|| \leq \lambda_n(L), 1\leq i \leq n$。
 
-**唯一最短向量问题(Unique Shortest Vector Problem, uSVP-$\gamma$)**：给定格 L，满足 $ \lambda_2(L) > \gamma \lambda_1(L)$，找到该格的最短向量。
+**唯一最短向量问题(Unique Shortest Vector Problem, uSVP-$\gamma$)**：给定格 L，满足 $\lambda_2(L) > \gamma \lambda_1(L)$，找到该格的最短向量。
 
 **最近向量问题(Closest Vector Problem，CVP)**：给定格 L和目标向量 $t\in R^m$，找到一个格中的非零向量 v，使得对于格中的任意非零向量 u，满足 $||v-t|| \leq ||u-t||$ 。
 
